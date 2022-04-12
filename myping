@@ -1,0 +1,33 @@
+#!/bin/bash
+
+Usage() { cat << EOF
+usage: ${0##*/} IP_ADDRESSES
+	
+	Sends 1 packet via ping with a short timeout.
+
+	try './myping 192.168.{1,2}.{1..100}'
+	
+	Sometimes it takes a few tries, still faster and more reliable than nmap -sL
+	
+EOF
+}
+
+if [[ -z "$1" || "$1" = "-h" ]]; then
+	Usage && exit 0
+fi
+
+BLANK="\e[0m"
+RED="\e[1;31m"
+GREEN="\e[1;32m"
+
+while [ $# -ne 0 ]; do
+	cur=${1};
+	res=$( ping -W .1 -q -c 1 "$cur" | tr '\n' ' ' | grep -v '100% packet' )
+	if [[ -n $res ]] ; then
+		echo -e "${cur} ${GREEN}UP${BLANK}"
+	fi
+	shift
+done
+
+
+# vi: ts=4
